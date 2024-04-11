@@ -19,9 +19,10 @@ var chats map[int64]string = map[int64]string{}
 type NotifyType string
 
 const (
-	AppAdded         NotifyType = "add"
-	AppRemoved       NotifyType = "removed"
-	AppStatusAuction NotifyType = "statusAuction"
+	AppAdded                  NotifyType = "add"
+	AppRemoved                NotifyType = "removed"
+	AppStatusAuction          NotifyType = "statusAuction"
+	AppStatusFirstDeclaration NotifyType = "statusFirstDeclaration"
 )
 
 type TrackingHandler struct {
@@ -53,8 +54,9 @@ func (h *TrackingHandler) StartTracking() {
 	}
 
 	track := true
-	fmt.Println("START TRACKING")
+	log.Println("START TRACKING")
 	for track {
+		log.Println("Processing...")
 		// Get all appartments from site
 		outerApps, err := h.appService.GetApartments()
 		if err != nil {
@@ -83,7 +85,11 @@ func (h *TrackingHandler) StartTracking() {
 			if err != nil {
 				fmt.Println(err.Error())
 			}
-			h.NotifyAllChats(&outApp, AppStatusAuction)
+			if outApp.Requested == 1 {
+				h.NotifyAllChats(&outApp, AppStatusFirstDeclaration)
+			} else if inApp.Requested < 2 && outApp.Requested > 1 {
+				h.NotifyAllChats(&outApp, AppStatusAuction)
+			}
 		}
 
 		// Remove appartment from database if it was deleted from site
@@ -96,7 +102,8 @@ func (h *TrackingHandler) StartTracking() {
 			h.NotifyAllChats(&rmApp, AppRemoved)
 		}
 
-		time.Sleep(time.Second * 5)
+		log.Println("Sleep for 10 minutes...")
+		time.Sleep(time.Minute * 10)
 	}
 }
 
@@ -114,7 +121,10 @@ func (h *TrackingHandler) NotifyAllChats(app *models.Apartment, notifyType Notif
 		text += "Квартира удалена из списка: "
 	case AppStatusAuction:
 		text += "Назначен аукцион на квартиру: "
+	case AppStatusFirstDeclaration:
+		text += "Подано первое заявление на квартиру: "
 	}
+
 	link := fmt.Sprintf("https://fr.mos.ru/uchastnikam-programmy/karta-renovatsii/%s/?ft=1&object=%s&object_type=TWO_YEARS_SELL&flat_id=%s", app.Object_code, app.Object_id, app.ID)
 	text += "\n\n" + link
 
