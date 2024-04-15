@@ -23,5 +23,5 @@ func main() {
 	go trackHandler.StartBot()
 
 	time.Sleep(time.Second)
-	trackHandler.StartTracking()
+	// trackHandler.StartTracking()
 }

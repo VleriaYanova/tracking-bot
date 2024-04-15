@@ -48,17 +48,16 @@ func NewTrackingHandler(s *services.ApartmentsService, chatService *services.Cha
 	}
 }
 
-func (h *TrackingHandler) StartTracking() {
+func (h *TrackingHandler) StartTracking(update *botModels.Update) {
 	if h.bot == nil {
 		panic("start bot before tracking")
 	}
-
 	track := true
 	log.Println("START TRACKING")
 	for track {
 		log.Println("Processing...")
 		// Get all appartments from site
-		outerApps, err := h.appService.GetApartments()
+		outerApps, err := h.appService.GetApartments(update.Message.Text)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -150,7 +149,7 @@ func (h *TrackingHandler) StartBot() {
 		bot.WithDefaultHandler(h.ChatHook()),
 	}
 
-	b, err := bot.New("7164820941:AAGPvMSs-vtycqWdYgRcLmmjsAicvoxEUlg", opts...)
+	b, err := bot.New("6939638145:AAEUhk_3pqdDwLWPfpUC6Jdm_YAUu6eOskQ", opts...)
 	if err != nil {
 		panic("bot start failed: " + err.Error())
 	}
@@ -185,6 +184,7 @@ func (h *TrackingHandler) ChatHook() func(ctx context.Context, b *bot.Bot, updat
 				return
 			}
 			chats[update.Message.Chat.ID] = ""
+			h.StartTracking(update)
 		} else if ok && update.Message.Text == "/stop" {
 			delete(chats, update.Message.Chat.ID)
 			err := h.chatService.DeleteByChatID(update.Message.Chat.ID)
