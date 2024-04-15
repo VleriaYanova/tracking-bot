@@ -2,8 +2,9 @@ package models
 
 import "time"
 
-type Chat struct {
+type Subscriber struct {
 	ID        int `gorm:"primarykey"`
 	CreatedAt time.Time
 	ChatID    int64
+	Events    string
 }
