@@ -15,7 +15,7 @@ func NewGormDb() *gorm.DB {
 
 	}
 
-	err = db.AutoMigrate(&models.Apartment{}, &models.Subscriber{})
+	err = db.AutoMigrate(&models.Apartment{}, &models.Subscriber{}, &models.Event{})
 	if err != nil {
 		panic(fmt.Sprintf("failed to migrate: %s", err.Error()))
 	}
