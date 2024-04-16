@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"fmt"
 	"tracking-bot/models"
 
 	"gorm.io/gorm"
@@ -21,14 +20,11 @@ func (r *GormSubscriberRepo) GetAll() (*[]models.Subscriber, error) {
 	return Subscribers, result.Error
 }
 
-func (r *GormSubscriberRepo) GetAllByEvent(event *models.Event) *[]models.Subscriber {
+func (r *GormSubscriberRepo) GetAllByEvent(event *models.Event) (*[]models.Subscriber, error) {
 	Subscribers := &[]models.Subscriber{}
 
-	// r.db.SetupJoinTable(Subscribers, "Events", &models.Subscribers_events{})
-	// r.db.SetupJoinTable(&models.Event{}, "Subscriber", &models.Subscribers_events{})
-	a := r.db.Preload("Events", "Events.ID = ?", event.ID).Find(Subscribers)
-	fmt.Println(a)
-	return Subscribers
+	result := r.db.Preload("Events", "Events.ID = ?", event.ID).Find(Subscribers)
+	return Subscribers, result.Error
 }
 
 func (r *GormSubscriberRepo) Create(Subscriber *models.Subscriber) (*models.Subscriber, error) {
