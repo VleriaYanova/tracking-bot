@@ -23,13 +23,11 @@ func (r *GormSubscriberRepo) GetAll() (*[]models.Subscriber, error) {
 
 func (r *GormSubscriberRepo) GetAllByEvent(event *models.Event) *[]models.Subscriber {
 	Subscribers := &[]models.Subscriber{}
+
 	// r.db.SetupJoinTable(Subscribers, "Events", &models.Subscribers_events{})
 	// r.db.SetupJoinTable(&models.Event{}, "Subscriber", &models.Subscribers_events{})
-	a := r.db.Preload("Events").Joins("JOIN events on subscriber_events.event_id=events.id").
-		Joins("JOIN subscribers on subscribers.id=subscriber_events.subscriber_id").
-		Find(Subscribers)
+	a := r.db.Preload("Events", "Events.ID = ?", event.ID).Find(Subscribers)
 	fmt.Println(a)
-
 	return Subscribers
 }
 
