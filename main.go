@@ -16,12 +16,9 @@ func main() {
 	// appServ := services.NewApartmentsService(courseRepo, http.DefaultClient)
 	// subscribersServ := services.NewSubscriberService(subscribersRepo)
 
-	// a, _ := subscribersServ.GetAllByEvent(models.InMomentSell)
-	// fmt.Println(a)
+	b := subscribersRepo.GetAllByEvent(&models.Event{ID: 3})
 
-	b, _ := subscribersRepo.Create(&models.Subscriber{ChatID: 54654456, Events: &[]models.Event{{ID: 2}, {ID: 1}}})
-
-	fmt.Println(b.Events)
+	fmt.Println(b)
 
 	// subscribersServ.Create(&models.Subscriber{Events: fmt.Sprintf("%s;%s", models.TwoYearsSell, models.InMomentSell)})
 
