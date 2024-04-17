@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+	"time"
 	"tracking-bot/db"
 	"tracking-bot/handlers"
 	"tracking-bot/repo"
@@ -10,16 +12,18 @@ import (
 func main() {
 	db := db.NewGormDb()
 
-	// courseRepo := repo.NewGormCoursesRepo(db)
+	appRepo := repo.NewGormApartmentRepo(db)
 	eventRepo := repo.NewEventRepo(db)
+	subRepo := repo.NewSubscriberRepo(db)
 
-	// appServ := services.NewApartmentsService(courseRepo, http.DefaultClient)
-	// subscribersServ := services.NewSubscriberService(subscribersRepo)
+	appServ := services.NewApartmentsService(appRepo, http.DefaultClient)
+	subscribersServ := services.NewSubscriberService(subRepo)
 	eventServise := services.NewEventService(eventRepo)
-	trackHandler := handlers.NewTrackingHandler(eventServise)
 
-	// go trackHandler.StartBot()
+	trackHandler := handlers.NewTrackingHandler(eventServise, subscribersServ, appServ)
 
-	// time.Sleep(time.Second)
+	go trackHandler.StartBot()
+
+	time.Sleep(time.Second * 2)
 	trackHandler.StartTracking()
 }

@@ -15,23 +15,35 @@ func NewSubscriberRepo(db *gorm.DB) *GormSubscriberRepo {
 }
 
 func (r *GormSubscriberRepo) GetAll() (*[]models.Subscriber, error) {
-	Subscribers := &[]models.Subscriber{}
-	result := r.db.Limit(-1).Find(Subscribers)
-	return Subscribers, result.Error
+	subscribers := &[]models.Subscriber{}
+	result := r.db.Limit(-1).Find(subscribers)
+	return subscribers, result.Error
 }
 
 func (r *GormSubscriberRepo) GetAllByEvent(event *models.Event) (*[]models.Subscriber, error) {
-	Subscribers := &[]models.Subscriber{}
+	subscribers := &[]models.Subscriber{}
 
-	result := r.db.Preload("Events", "Events.ID = ?", event.ID).Find(Subscribers)
-	return Subscribers, result.Error
+	result := r.db.Preload("Events", "Events.ID = ?", event.ID).Find(subscribers)
+	return subscribers, result.Error
 }
 
-func (r *GormSubscriberRepo) Create(Subscriber *models.Subscriber) (*models.Subscriber, error) {
-	err := r.db.Create(Subscriber).Error
-	return Subscriber, err
+func (r *GormSubscriberRepo) GetByChatID(chatID int64) (*models.Subscriber, error) {
+	subscriber := &models.Subscriber{}
+
+	result := r.db.Where(&models.Subscriber{ChatID: chatID}).Preload("Events").Find(subscriber)
+	return subscriber, result.Error
+}
+
+func (r *GormSubscriberRepo) Create(subscriber *models.Subscriber) (*models.Subscriber, error) {
+	err := r.db.Create(subscriber).Error
+	return subscriber, err
+}
+
+func (r *GormSubscriberRepo) Update(subscriber *models.Subscriber, id int) (*models.Subscriber, error) {
+	err := r.db.Model(&models.Subscriber{ID: id}).Association("Events").Replace(subscriber.Events)
+	return subscriber, err
 }
 
 func (r *GormSubscriberRepo) DeleteByChatID(id int64) error {
-	return r.db.Where(&models.Subscriber{ChatID: id}).Delete(&models.Subscriber{}).Error
+	return r.db.Where(&models.Subscriber{ChatID: id}).Preload("Events").Delete(&models.Subscriber{}).Error
 }

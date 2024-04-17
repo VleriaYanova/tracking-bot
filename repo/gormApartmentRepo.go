@@ -10,7 +10,7 @@ type GormApartmentRepo struct {
 	db *gorm.DB
 }
 
-func NewGormCoursesRepo(db *gorm.DB) *GormApartmentRepo {
+func NewGormApartmentRepo(db *gorm.DB) *GormApartmentRepo {
 	return &GormApartmentRepo{db: db}
 }
 
