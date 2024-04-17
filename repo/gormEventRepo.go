@@ -16,7 +16,7 @@ func NewEventRepo(db *gorm.DB) *GormEventRepo {
 
 func (r *GormEventRepo) GetAll() (*[]models.Event, error) {
 	Event := &[]models.Event{}
-	result := r.db.Limit(-1).Find(Event)
+	result := r.db.Limit(-1).Preload("Subscriber").Find(Event)
 	return Event, result.Error
 }
 
