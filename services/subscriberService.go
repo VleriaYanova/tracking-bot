@@ -25,6 +25,6 @@ func (s *SubscriberService) Create(Subscriber *models.Subscriber) (*models.Subsc
 
 func (s *SubscriberService) DeleteByChatID(id int64) error { return s.repo.DeleteByChatID(id) }
 
-func (s *SubscriberService) GetAllByEvent(event string) (*[]models.Subscriber, error) {
+func (s *SubscriberService) GetAllByEvent(event *models.Event) (*[]models.Subscriber, error) {
 	return s.repo.GetAllByEvent(event)
 }
