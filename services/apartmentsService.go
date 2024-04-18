@@ -43,8 +43,8 @@ func (s *ApartmentsService) GetApartments(link string) (*[]models.Apartment, err
 	return &housing.Housings.Items, nil
 }
 
-func (s *ApartmentsService) CreateIfNotExist(app *models.Apartment) (bool, error) {
-	foundApp, err := s.repo.Find(&models.Apartment{ID: app.ID})
+func (s *ApartmentsService) CreateIfNotExist(app *models.Apartment, eventType string) (bool, error) {
+	foundApp, err := s.repo.Find(&models.Apartment{ID: app.ID}, eventType)
 	found := foundApp.Name != ""
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -53,7 +53,7 @@ func (s *ApartmentsService) CreateIfNotExist(app *models.Apartment) (bool, error
 	if found {
 		return false, nil
 	}
-	_, err = s.repo.Create(app)
+	_, err = s.repo.Create(app, eventType)
 	if err != nil {
 		return false, err
 	}
@@ -61,8 +61,8 @@ func (s *ApartmentsService) CreateIfNotExist(app *models.Apartment) (bool, error
 	return true, nil
 }
 
-func (s *ApartmentsService) RemoveDeletedApps(outerApps *[]models.Apartment) (*[]models.Apartment, error) {
-	innerApps, err := s.repo.GetAll()
+func (s *ApartmentsService) RemoveDeletedApps(outerApps *[]models.Apartment, eventType string) (*[]models.Apartment, error) {
+	innerApps, err := s.repo.GetAll(eventType)
 	if err != nil {
 		return nil, err
 	}
@@ -89,10 +89,10 @@ func (s *ApartmentsService) RemoveDeletedApps(outerApps *[]models.Apartment) (*[
 	return deletedApps, nil
 }
 
-func (s *ApartmentsService) GetById(id string) (*models.Apartment, error) {
-	return s.repo.Get(id)
+func (s *ApartmentsService) GetById(id string, eventType string) (*models.Apartment, error) {
+	return s.repo.Get(id, eventType)
 }
 
-func (s *ApartmentsService) Update(app *models.Apartment, id string) (*models.Apartment, error) {
-	return s.repo.Update(app, id)
+func (s *ApartmentsService) Update(app *models.Apartment, id string, eventType string) (*models.Apartment, error) {
+	return s.repo.Update(app, id, eventType)
 }

@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	"tracking-bot/models"
 
 	"gorm.io/gorm"
@@ -14,25 +15,29 @@ func NewGormApartmentRepo(db *gorm.DB) *GormApartmentRepo {
 	return &GormApartmentRepo{db: db}
 }
 
-func (r *GormApartmentRepo) Create(app *models.Apartment) (*models.Apartment, error) {
-	err := r.db.Create(app).Error
+func (r *GormApartmentRepo) Create(app *models.Apartment, eventType string) (*models.Apartment, error) {
+	event := eventType[1:]
+	err := r.db.Table(event).Create(app).Error
 	return app, err
 }
 
-func (r *GormApartmentRepo) Get(id string) (*models.Apartment, error) {
+func (r *GormApartmentRepo) Get(id string, eventType string) (*models.Apartment, error) {
+	event := eventType[1:]
 	app := &models.Apartment{}
-	err := r.db.First(app, id).Error
+	err := r.db.Table(event).First(app, id).Error
 	return app, err
 }
 
-func (r *GormApartmentRepo) GetAll() (*[]models.Apartment, error) {
+func (r *GormApartmentRepo) GetAll(eventType string) (*[]models.Apartment, error) {
+	event := eventType[1:]
 	apps := &[]models.Apartment{}
-	result := r.db.Limit(-1).Find(apps)
+	result := r.db.Limit(-1).Table(event).Find(apps)
 	return apps, result.Error
 }
 
-func (r *GormApartmentRepo) Find(app *models.Apartment) (*models.Apartment, error) {
-	result := r.db.Where(app).First(app)
+func (r *GormApartmentRepo) Find(app *models.Apartment, eventType string) (*models.Apartment, error) {
+	event := eventType[1:]
+	result := r.db.Table(event).Where(app).First(app)
 	return app, result.Error
 }
 
@@ -41,7 +46,9 @@ func (r *GormApartmentRepo) DeleteByID(id string) error {
 	return r.db.Delete(app, id).Error
 }
 
-func (r *GormApartmentRepo) Update(app *models.Apartment, id string) (*models.Apartment, error) {
-	err := r.db.Model(&models.Apartment{ID: id}).Updates(app).Error
+func (r *GormApartmentRepo) Update(app *models.Apartment, id string, eventType string) (*models.Apartment, error) {
+	event := eventType[1:]
+	fmt.Println("update")
+	err := r.db.Table(event).Where("id=?", id).Updates(app).Error
 	return app, err
 }
