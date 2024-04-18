@@ -41,12 +41,12 @@ func NewTrackingHandler(eventService *services.EventService, subService *service
 	}
 }
 
-var eventsSubscribers map[string][]models.Subscriber = map[string][]models.Subscriber{
-	models.TwoYearsSell: []models.Subscriber{},
-	models.InMomentSell: []models.Subscriber{},
+var eventsSubscribers = map[string][]models.Subscriber{
+	models.TwoYearsSell: {},
+	models.InMomentSell: {},
 }
 
-func (h *TrackingHandler) InitEventSubscriber(eventSubscriberMap map[string][]models.Subscriber) {
+func (h *TrackingHandler) InitEventSubscriber() {
 	allEvents, err := h.eventService.GetAll()
 	if err != nil {
 		fmt.Println(err)
@@ -61,17 +61,15 @@ func (h *TrackingHandler) StartTracking() {
 		panic("start bot before tracking")
 	}
 	track := true
-	h.InitEventSubscriber(eventsSubscribers)
+	h.InitEventSubscriber()
 	log.Println("START TRACKING")
 	for track {
 		log.Println("Processing...")
 		allEvents, err := h.eventService.GetAll()
 
-		// TODO: add events?
 		for _, event := range *allEvents {
 			if len(eventsSubscribers[event.Name]) > 0 {
-				fmt.Println(eventsSubscribers)
-				h.Handle(event.Name)
+				go h.Handle(event.Name)
 			}
 		}
 
@@ -96,22 +94,32 @@ func (h *TrackingHandler) Handle(eventName string) {
 	h.ApartmentsHandler(Link, eventName)
 }
 
+func (h *TrackingHandler) readableEventType(eventType string) string {
+	switch eventType {
+	case models.TwoYearsSell:
+		return "ПОКУПКА В ТЕЧЕНИИ 2-Х ЛЕТ"
+	case models.InMomentSell:
+		return "ДОКУПКА В МОМЕНТ ПЕРЕЕЗДА"
+	}
+	return ""
+}
+
 func (h *TrackingHandler) NotifyAllSubscribers(app *models.Apartment, notifyType NotifyType, eventType string) {
 	if app == nil || app.ID == "" {
 		fmt.Println("Got malformed app in notify method")
 		return
 	}
 	fmt.Printf("Notifying all chats. Notify type: %s\n", notifyType)
-	text := ""
+	text := h.readableEventType(eventType) + "\n\n"
 	switch notifyType {
 	case AppAdded:
-		text += "Добавлена новая квартира в список: "
+		text += "✅ Добавлена новая квартира в список: "
 	case AppRemoved:
-		text += "Квартира удалена из списка: "
+		text += "❌ Квартира удалена из списка: "
 	case AppStatusAuction:
-		text += "Назначен аукцион на квартиру: "
+		text += "⚖️ Назначен аукцион на квартиру: "
 	case AppStatusFirstDeclaration:
-		text += "Подано первое заявление на квартиру: "
+		text += "📝 Подано первое заявление на квартиру: "
 	}
 	if app.Y2_sell == 1 {
 		prefLink = fmt.Sprintf("https://fr.mos.ru/uchastnikam-programmy/karta-renovatsii/%s/?ft=1&object=%s&object_type=TWO_YEARS_SELL&flat_id=%s", app.Object_code, app.Object_id, app.ID)
@@ -204,10 +212,6 @@ func (h *TrackingHandler) GetEventTypeByApp(app *models.Apartment) string {
 	} else {
 		return models.InMomentSell
 	}
-}
-
-func removeEvent(slice []models.Event, s int) []models.Event {
-	return append(slice[:s], slice[s+1:]...)
 }
 
 func (h *TrackingHandler) StartBot() {
