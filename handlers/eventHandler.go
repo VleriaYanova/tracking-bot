@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"log"
-	"time"
 )
 
 var twoYearsSellLink = "https://fr.mos.ru/pokupka-nedvizhimosti-dlya-vseh/ajax.php?category[]=PARTICIPANTS&y2_sell=1&status[]=PROCESSING&status[]=FINISHED&price_min=0&price_max=100000000000000&price_m_min=0&price_m_max=100000000000&area_min=0&area_max=100000000&floor_min=-1&floor_max=100000000&open_sale=0&pagesize=100000"
@@ -58,7 +57,4 @@ func (h *TrackingHandler) ApartmentsHandler(link string, eventName string) {
 		eventType := h.GetEventTypeByApp(&rmApp)
 		h.NotifyAllSubscribers(&rmApp, AppRemoved, eventType)
 	}
-
-	log.Println("Sleep for 10 minutes...")
-	time.Sleep(time.Second * 20)
 }

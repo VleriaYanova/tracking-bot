@@ -41,11 +41,15 @@ func (r *GormSubscriberRepo) Create(subscriber *models.Subscriber) (*models.Subs
 }
 
 func (r *GormSubscriberRepo) Update(subscriber *models.Subscriber, id int) (*models.Subscriber, error) {
-	err := r.db.Model(subscriber).Update("Events", subscriber.Events).Error
+	err := r.db.Model(subscriber).Updates(subscriber).Update("Events", subscriber.Events).Error
 	return subscriber, err
 }
 
 func (r *GormSubscriberRepo) DeleteByChatID(id int64, eventType string) error {
 	fmt.Println("deleted")
 	return r.db.Where(&models.Subscriber{ChatID: id}).Preload("Events").Delete(&models.Subscriber{Events: &[]models.Event{{Name: eventType}}}).Error
+}
+
+func (r *GormSubscriberRepo) Unsubscribe(subID int, eventID int) error {
+	return r.db.Table("subscriber_events").Where("event_id = ?", eventID).Where("subscriber_id = ?", subID).Delete("").Error
 }

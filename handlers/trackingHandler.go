@@ -171,11 +171,9 @@ func (h *TrackingHandler) SubscriberHook() func(ctx context.Context, b *bot.Bot,
 
 		if len(*sub.Events) > 0 {
 			found := false
-			for i, event := range *sub.Events {
+			for _, event := range *sub.Events {
 				if event.Name == eventName {
-					updSub := sub
-					*updSub.Events = append((*updSub.Events)[:i], (*updSub.Events)[i+1:]...)
-					_, err = h.subscribersService.Update(updSub, sub.ID)
+					err = h.subscribersService.Unsubscribe(sub.ID, event.ID)
 					if err != nil {
 						panic("cannot update subscriber: " + err.Error())
 					}
@@ -186,9 +184,6 @@ func (h *TrackingHandler) SubscriberHook() func(ctx context.Context, b *bot.Bot,
 				for i, foundSub := range eventsSubscribers[eventName] {
 					if foundSub.ChatID == sub.ChatID {
 						eventsSubscribers[eventName] = append(eventsSubscribers[eventName][:i], eventsSubscribers[eventName][i+1:]...)
-						a := h.eventService.DeleteByChatID(sub.ChatID, eventName)
-						fmt.Println(a)
-
 					}
 				}
 				return
@@ -223,7 +218,7 @@ func (h *TrackingHandler) StartBot() {
 		bot.WithDefaultHandler(h.SubscriberHook()),
 	}
 
-	b, err := bot.New("6939638145:AAEUhk_3pqdDwLWPfpUC6Jdm_YAUu6eOskQ", opts...)
+	b, err := bot.New("7038817424:AAE6lPY8P0xyKLXJ7hlOkdKRaLPhYv_7Nuw", opts...)
 	if err != nil {
 		panic("bot start failed: " + err.Error())
 	}
