@@ -40,7 +40,7 @@ func (r *GormSubscriberRepo) Create(subscriber *models.Subscriber) (*models.Subs
 }
 
 func (r *GormSubscriberRepo) Update(subscriber *models.Subscriber, id int) (*models.Subscriber, error) {
-	err := r.db.Model(&models.Subscriber{ID: id}).Association("Events").Replace(subscriber.Events)
+	err := r.db.Model(subscriber).Update("Events", subscriber.Events).Error
 	return subscriber, err
 }
 
