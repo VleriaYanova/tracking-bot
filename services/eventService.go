@@ -31,4 +31,6 @@ func (s *EventService) Create(event *models.Event) (*models.Event, error) {
 	return s.repo.Create(event)
 }
 
-func (s *EventService) DeleteByChatID(id int) error { return s.repo.Delete(id) }
+func (s *EventService) DeleteByChatID(id int64, eventType string) error {
+	return s.repo.Delete(id, eventType)
+}

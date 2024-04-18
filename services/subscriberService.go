@@ -35,4 +35,6 @@ func (s *SubscriberService) Update(subscriber *models.Subscriber, id int) (*mode
 	return s.repo.Update(subscriber, id)
 }
 
-func (s *SubscriberService) DeleteByChatID(id int64) error { return s.repo.DeleteByChatID(id) }
+func (s *SubscriberService) DeleteByChatID(id int64, eventType string) error {
+	return s.repo.DeleteByChatID(id, eventType)
+}

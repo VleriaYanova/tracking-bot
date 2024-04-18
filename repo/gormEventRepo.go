@@ -39,6 +39,6 @@ func (r *GormEventRepo) Create(event *models.Event) (*models.Event, error) {
 	return event, err
 }
 
-func (r *GormEventRepo) Delete(id int) error {
-	return r.db.Where(&models.Event{ID: id}).Delete(&models.Event{}).Error
+func (r *GormEventRepo) Delete(id int64, eventType string) error {
+	return r.db.Where(&models.Event{Name: eventType}).Delete(&models.Event{Subscriber: &[]models.Subscriber{{ChatID: int64(id)}}}).Error
 }
