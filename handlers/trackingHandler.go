@@ -76,7 +76,7 @@ func (h *TrackingHandler) StartTracking() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		time.Sleep(time.Second * 30)
+		time.Sleep(time.Minute * 5)
 	}
 }
 
@@ -214,7 +214,7 @@ func (h *TrackingHandler) GetEventTypeByApp(app *models.Apartment) string {
 	}
 }
 
-func (h *TrackingHandler) StartBot() {
+func (h *TrackingHandler) StartBot(botKey string) {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
@@ -222,7 +222,7 @@ func (h *TrackingHandler) StartBot() {
 		bot.WithDefaultHandler(h.SubscriberHook()),
 	}
 
-	b, err := bot.New("7038817424:AAE6lPY8P0xyKLXJ7hlOkdKRaLPhYv_7Nuw", opts...)
+	b, err := bot.New(botKey, opts...)
 	if err != nil {
 		panic("bot start failed: " + err.Error())
 	}
