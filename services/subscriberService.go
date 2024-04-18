@@ -38,3 +38,7 @@ func (s *SubscriberService) Update(subscriber *models.Subscriber, id int) (*mode
 func (s *SubscriberService) DeleteByChatID(id int64, eventType string) error {
 	return s.repo.DeleteByChatID(id, eventType)
 }
+
+func (r *SubscriberService) Unsubscribe(subID int, eventID int) error {
+	return r.repo.Unsubscribe(subID, eventID)
+}
