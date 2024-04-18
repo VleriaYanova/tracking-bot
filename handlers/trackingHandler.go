@@ -186,6 +186,9 @@ func (h *TrackingHandler) SubscriberHook() func(ctx context.Context, b *bot.Bot,
 				for i, foundSub := range eventsSubscribers[eventName] {
 					if foundSub.ChatID == sub.ChatID {
 						eventsSubscribers[eventName] = append(eventsSubscribers[eventName][:i], eventsSubscribers[eventName][i+1:]...)
+						a := h.eventService.DeleteByChatID(sub.ChatID, eventName)
+						fmt.Println(a)
+
 					}
 				}
 				return
@@ -197,7 +200,6 @@ func (h *TrackingHandler) SubscriberHook() func(ctx context.Context, b *bot.Bot,
 			panic("cannot update subscriber: " + err.Error())
 		}
 		eventsSubscribers[eventName] = append(eventsSubscribers[eventName], *sub)
-		fmt.Println(134)
 	}
 }
 

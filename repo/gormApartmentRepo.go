@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"fmt"
 	"tracking-bot/models"
 
 	"gorm.io/gorm"
@@ -48,7 +47,6 @@ func (r *GormApartmentRepo) DeleteByID(id string) error {
 
 func (r *GormApartmentRepo) Update(app *models.Apartment, id string, eventType string) (*models.Apartment, error) {
 	event := eventType[1:]
-	fmt.Println("update")
 	err := r.db.Table(event).Where("id=?", id).Updates(app).Error
 	return app, err
 }

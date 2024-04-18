@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	"tracking-bot/models"
 
 	"gorm.io/gorm"
@@ -44,6 +45,7 @@ func (r *GormSubscriberRepo) Update(subscriber *models.Subscriber, id int) (*mod
 	return subscriber, err
 }
 
-func (r *GormSubscriberRepo) DeleteByChatID(id int64) error {
-	return r.db.Where(&models.Subscriber{ChatID: id}).Preload("Events").Delete(&models.Subscriber{}).Error
+func (r *GormSubscriberRepo) DeleteByChatID(id int64, eventType string) error {
+	fmt.Println("deleted")
+	return r.db.Where(&models.Subscriber{ChatID: id}).Preload("Events").Delete(&models.Subscriber{Events: &[]models.Event{{Name: eventType}}}).Error
 }
