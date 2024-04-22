@@ -40,9 +40,10 @@ func (r *GormApartmentRepo) Find(app *models.Apartment, eventType string) (*mode
 	return app, result.Error
 }
 
-func (r *GormApartmentRepo) DeleteByID(id string) error {
+func (r *GormApartmentRepo) DeleteByID(id string, eventType string) error {
+	event := eventType[1:]
 	app := &models.Apartment{}
-	return r.db.Delete(app, id).Error
+	return r.db.Table(event).Where("id=?", id).Delete(app, id).Error
 }
 
 func (r *GormApartmentRepo) Update(app *models.Apartment, id string, eventType string) (*models.Apartment, error) {

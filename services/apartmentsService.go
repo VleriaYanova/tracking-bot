@@ -79,7 +79,7 @@ func (s *ApartmentsService) RemoveDeletedApps(outerApps *[]models.Apartment, eve
 		if found {
 			continue
 		}
-		err = s.repo.DeleteByID(inApp.ID)
+		err = s.repo.DeleteByID(inApp.ID, eventType)
 		if err != nil {
 			return nil, err
 		}
