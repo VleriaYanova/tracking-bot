@@ -76,7 +76,7 @@ func (h *TrackingHandler) StartTracking() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Minute * 5)
 	}
 }
 
@@ -150,6 +150,7 @@ func (h *TrackingHandler) SubscriberHook() func(ctx context.Context, b *bot.Bot,
 		eventName := update.Message.Text
 		if eventName == models.ActiveEvents {
 			h.SendActiveSubscriberEvents(update.Message.Chat.ID)
+			return
 		}
 		if _, ok := eventsSubscribers[eventName]; !ok {
 			return
@@ -221,7 +222,7 @@ func (h *TrackingHandler) SendActiveSubscriberEvents(chatID int64) {
 	for _, s := range *subscriber.Events {
 		events += "\n" + h.readableEventType(s.Name)
 	}
-	text := fmt.Sprintf("%v", events)
+	text := events
 	h.bot.SendMessage(context.Background(), &bot.SendMessageParams{
 		ChatID: subscriber.ChatID,
 		Text:   text,
