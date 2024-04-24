@@ -64,7 +64,7 @@ func (h *TrackingHandler) StartTracking() {
 	h.InitEventSubscriber()
 	log.Println("START TRACKING")
 	for track {
-		log.Println("Processing...")
+		log.Println("Run main loop...")
 		allEvents, err := h.eventService.GetAll()
 
 		for _, event := range *allEvents {
@@ -76,7 +76,7 @@ func (h *TrackingHandler) StartTracking() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		time.Sleep(time.Minute * 5)
+		time.Sleep(time.Second * 5)
 	}
 }
 
@@ -148,6 +148,9 @@ func (h *TrackingHandler) SubscriberHook() func(ctx context.Context, b *bot.Bot,
 			return
 		}
 		eventName := update.Message.Text
+		if eventName == models.ActiveEvents {
+			h.SendActiveSubscriberEvents(update.Message.Chat.ID)
+		}
 		if _, ok := eventsSubscribers[eventName]; !ok {
 			return
 		}
@@ -206,6 +209,25 @@ func (h *TrackingHandler) SubscriberHook() func(ctx context.Context, b *bot.Bot,
 	}
 }
 
+func (h *TrackingHandler) SendActiveSubscriberEvents(chatID int64) {
+	subscriber, err := h.subscribersService.GetByChatID(chatID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	events := "Вы подписаны на: \n"
+	if len(*subscriber.Events) == 0 {
+		events = "Вы ни на что не подписаны"
+	}
+	for _, s := range *subscriber.Events {
+		events += "\n" + h.readableEventType(s.Name)
+	}
+	text := fmt.Sprintf("%v", events)
+	h.bot.SendMessage(context.Background(), &bot.SendMessageParams{
+		ChatID: subscriber.ChatID,
+		Text:   text,
+	})
+}
+
 func (h *TrackingHandler) GetEventTypeByApp(app *models.Apartment) string {
 	if app.Y2_sell == 1 {
 		return models.TwoYearsSell
@@ -235,6 +257,9 @@ func (h *TrackingHandler) StartBot(botKey string) {
 		}, {
 			Command:     models.InMomentSell,
 			Description: "Подписаться/Отписаться на покупку квартир в момент переезда",
+		}, {
+			Command:     models.ActiveEvents,
+			Description: "Активные подписки",
 		}},
 		Scope:        nil,
 		LanguageCode: "",
