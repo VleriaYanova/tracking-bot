@@ -5,5 +5,5 @@ type HousingResponse struct {
 }
 
 type Housing struct {
-	Items []Apartment `json: "items"`
+	Items []Parking `json: "items"`
 }

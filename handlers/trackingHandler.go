@@ -74,22 +74,6 @@ func (h *TrackingHandler) StartTracking() {
 				h.NotifyAllChats(&outApp, AppAdded)
 				continue
 			}
-			inApp, err := h.appService.GetById(outApp.ID)
-			if err != nil {
-				fmt.Println(err.Error())
-			}
-			if inApp.Requested == outApp.Requested {
-				continue
-			}
-			_, err = h.appService.Update(&outApp, inApp.ID)
-			if err != nil {
-				fmt.Println(err.Error())
-			}
-			if outApp.Requested == 1 {
-				h.NotifyAllChats(&outApp, AppStatusFirstDeclaration)
-			} else if inApp.Requested < 2 && outApp.Requested > 1 {
-				h.NotifyAllChats(&outApp, AppStatusAuction)
-			}
 		}
 
 		// Remove appartment from database if it was deleted from site
@@ -107,7 +91,7 @@ func (h *TrackingHandler) StartTracking() {
 	}
 }
 
-func (h *TrackingHandler) NotifyAllChats(app *models.Apartment, notifyType NotifyType) {
+func (h *TrackingHandler) NotifyAllChats(app *models.Parking, notifyType NotifyType) {
 	if app == nil || app.ID == "" {
 		fmt.Println("Got malformed app in notify method")
 		return
@@ -116,13 +100,9 @@ func (h *TrackingHandler) NotifyAllChats(app *models.Apartment, notifyType Notif
 	text := ""
 	switch notifyType {
 	case AppAdded:
-		text += "Добавлена новая квартира в список: "
+		text += "Добавлено новое машино-место: "
 	case AppRemoved:
-		text += "Квартира удалена из списка: "
-	case AppStatusAuction:
-		text += "Назначен аукцион на квартиру: "
-	case AppStatusFirstDeclaration:
-		text += "Подано первое заявление на квартиру: "
+		text += "Удалено машино-место: "
 	}
 
 	link := fmt.Sprintf("https://fr.mos.ru/uchastnikam-programmy/karta-renovatsii/%s/?ft=1&object=%s&object_type=TWO_YEARS_SELL&flat_id=%s", app.Object_code, app.Object_id, app.ID)
@@ -150,7 +130,7 @@ func (h *TrackingHandler) StartBot() {
 		bot.WithDefaultHandler(h.ChatHook()),
 	}
 
-	b, err := bot.New("7164820941:AAGPvMSs-vtycqWdYgRcLmmjsAicvoxEUlg", opts...)
+	b, err := bot.New("7273970062:AAF12q2ZGMIohb2byxkoDxug7e8nPRoDDf0", opts...)
 	if err != nil {
 		panic("bot start failed: " + err.Error())
 	}

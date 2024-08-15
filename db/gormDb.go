@@ -9,13 +9,13 @@ import (
 )
 
 func NewGormDb() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("houses.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("parkings.db"), &gorm.Config{})
 
 	if err != nil {
 
 	}
 
-	err = db.AutoMigrate(&models.Apartment{}, &models.Chat{})
+	err = db.AutoMigrate(&models.Parking{}, &models.Chat{})
 	if err != nil {
 		panic(fmt.Sprintf("failed to migrate: %s", err.Error()))
 	}

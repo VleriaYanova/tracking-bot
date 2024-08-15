@@ -23,8 +23,8 @@ func NewApartmentsService(r *repo.GormApartmentRepo, c *http.Client) *Apartments
 	}
 }
 
-func (s *ApartmentsService) GetApartments() (*[]models.Apartment, error) {
-	response, err := s.httpClient.Get("https://fr.mos.ru/pokupka-nedvizhimosti-dlya-vseh/ajax.php?category[]=PARTICIPANTS&y2_sell=1&status[]=PROCESSING&status[]=FINISHED&price_min=0&price_max=100000000000000&price_m_min=0&price_m_max=100000000000&area_min=0&area_max=100000000&floor_min=-1&floor_max=100000000&open_sale=0&pagesize=100000")
+func (s *ApartmentsService) GetApartments() (*[]models.Parking, error) {
+	response, err := s.httpClient.Get("https://fr.mos.ru/pokupka-nedvizhimosti-dlya-vseh/ajax.php?category[]=PARTICIPANTS&type[]=P&status[]=PROCESSING&status[]=FINISHED&price_min=0&price_max=100000000000000&price_m_min=0&price_m_max=100000000000&area_min=0&area_max=100000000&open_sale=0&pagesize=100000")
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +43,8 @@ func (s *ApartmentsService) GetApartments() (*[]models.Apartment, error) {
 	return &housing.Housings.Items, nil
 }
 
-func (s *ApartmentsService) CreateIfNotExist(app *models.Apartment) (bool, error) {
-	foundApp, err := s.repo.Find(&models.Apartment{ID: app.ID})
+func (s *ApartmentsService) CreateIfNotExist(app *models.Parking) (bool, error) {
+	foundApp, err := s.repo.Find(&models.Parking{ID: app.ID})
 	found := foundApp.Name != ""
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -61,13 +61,13 @@ func (s *ApartmentsService) CreateIfNotExist(app *models.Apartment) (bool, error
 	return true, nil
 }
 
-func (s *ApartmentsService) RemoveDeletedApps(outerApps *[]models.Apartment) (*[]models.Apartment, error) {
+func (s *ApartmentsService) RemoveDeletedApps(outerApps *[]models.Parking) (*[]models.Parking, error) {
 	innerApps, err := s.repo.GetAll()
 	if err != nil {
 		return nil, err
 	}
 
-	deletedApps := &[]models.Apartment{}
+	deletedApps := &[]models.Parking{}
 	for _, inApp := range *innerApps {
 		found := false
 		for _, outApp := range *outerApps {
@@ -89,10 +89,10 @@ func (s *ApartmentsService) RemoveDeletedApps(outerApps *[]models.Apartment) (*[
 	return deletedApps, nil
 }
 
-func (s *ApartmentsService) GetById(id string) (*models.Apartment, error) {
+func (s *ApartmentsService) GetById(id string) (*models.Parking, error) {
 	return s.repo.Get(id)
 }
 
-func (s *ApartmentsService) Update(app *models.Apartment, id string) (*models.Apartment, error) {
+func (s *ApartmentsService) Update(app *models.Parking, id string) (*models.Parking, error) {
 	return s.repo.Update(app, id)
 }
