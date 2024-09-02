@@ -100,9 +100,9 @@ func (h *TrackingHandler) NotifyAllChats(app *models.Parking, notifyType NotifyT
 	text := ""
 	switch notifyType {
 	case AppAdded:
-		text += "Добавлено новое машино-место: "
+		text += "Добавлено новое машино-место: " + app.Number
 	case AppRemoved:
-		text += "Удалено машино-место: "
+		text += "Удалено машино-место: " + app.Number
 	}
 
 	link := fmt.Sprintf("https://fr.mos.ru/uchastnikam-programmy/karta-renovatsii/%s/?ft=1&object=%s&object_type=TWO_YEARS_SELL&flat_id=%s", app.Object_code, app.Object_id, app.ID)
