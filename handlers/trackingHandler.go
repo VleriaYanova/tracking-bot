@@ -213,19 +213,23 @@ func (h *TrackingHandler) SubscriberHook() func(ctx context.Context, b *bot.Bot,
 func (h *TrackingHandler) SendActiveSubscriberEvents(chatID int64) {
 	subscriber, err := h.subscribersService.GetByChatID(chatID)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Ошибка при получении подписчика:", err)
+		return
 	}
-	events := "Вы подписаны на: \n"
+
+	var events string
 	if len(*subscriber.Events) == 0 {
 		events = "Вы ни на что не подписаны"
+	} else {
+		events = "Вы подписаны на: \n"
+		for _, s := range *subscriber.Events {
+			events += "\n" + h.readableEventType(s.Name)
+		}
 	}
-	for _, s := range *subscriber.Events {
-		events += "\n" + h.readableEventType(s.Name)
-	}
-	text := events
+
 	h.bot.SendMessage(context.Background(), &bot.SendMessageParams{
 		ChatID: subscriber.ChatID,
-		Text:   text,
+		Text:   events,
 	})
 }
 
