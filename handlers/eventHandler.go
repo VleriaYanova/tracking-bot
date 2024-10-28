@@ -15,6 +15,7 @@ func (h *TrackingHandler) ApartmentsHandler(link string, eventName string) {
 	outerApps, err := h.appService.GetApartments(link)
 	if err != nil {
 		fmt.Println(err.Error())
+		return
 	}
 
 	// Saves appartment in database if it not exists
