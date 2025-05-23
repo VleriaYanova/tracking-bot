@@ -218,7 +218,7 @@ func (h *TrackingHandler) SendActiveSubscriberEvents(chatID int64) {
 	}
 
 	var events string
-	if len(*subscriber.Events) == 0 {
+	if subscriber == nil || len(*subscriber.Events) == 0 {
 		events = "Вы ни на что не подписаны"
 	} else {
 		events = "Вы подписаны на: \n"
